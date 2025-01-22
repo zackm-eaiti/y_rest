@@ -8,6 +8,7 @@ class YRestApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
