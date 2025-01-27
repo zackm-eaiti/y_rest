@@ -4,21 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import y_rest.models.dto.UserDto;
-import y_rest.service.UserService;
+import y_rest.models.dto.TweetDto;
+import y_rest.models.entity.Tweet;
+import y_rest.service.TweetService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
-public class UserResource {
+@RequestMapping("/tweet")
+public class TweetResource {
 
     @Autowired
-    private UserService service;
+    private TweetService service;
 
     @GetMapping
-    public List<UserDto> getUsers() {
-        return service.listUsers().stream().map(UserDto::new).toList();
+    public List<TweetDto> getTweets() {
+        return service.listTweets().stream().map(Tweet::convertToDto).toList();
     }
+
 }
