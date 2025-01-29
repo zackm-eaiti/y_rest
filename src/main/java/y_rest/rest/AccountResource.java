@@ -5,8 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import y_rest.models.dto.AccountDto;
-import y_rest.models.entity.Account;
+import y_rest.models.dto.account.AccountDto;
 import y_rest.service.AccountService;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class AccountResource {
     @GetMapping
     public List<AccountDto> getUsers() {
         return service.listUsers().stream()
-                .map(Account::convertToDto)
+                .map(AccountDto::fromAccount)
                 .toList();
     }
 }

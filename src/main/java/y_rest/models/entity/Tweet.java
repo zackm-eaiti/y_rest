@@ -1,47 +1,72 @@
 package y_rest.models.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import y_rest.models.dto.TweetDto;
+import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table
 public class Tweet {
+
     @Id
     @Column
     private UUID id;
 
-    @Column(name = "account_id")
-    private UUID accountId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Column
     private Instant created;
 
-    @Column(name = "parent_tweet_id")
-    private UUID parentTweetId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_tweet_id")
+    private Tweet parentTweet;
 
-    @Column(name = "quote_tweet_id")
-    private UUID quoteTweetId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quote_tweet_id")
+    private Tweet quoteTweet;
 
-    @Column(name = "retweet_id")
-    private UUID retweetId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "retweet_id")
+    private Tweet retweet;
+
+    @OneToMany(mappedBy = "parentTweet", fetch = FetchType.LAZY)
+    private List<Tweet> replies;
 
     @Column(name = "text_content")
     private String textContent;
 
-    public Tweet(UUID id, UUID accountId, Instant created, UUID parentTweetId, UUID quoteTweetId, UUID retweetId, String textContent) {
-        this.id = id;
-        this.accountId = accountId;
-        this.created = created;
-        this.parentTweetId = parentTweetId;
-        this.quoteTweetId = quoteTweetId;
-        this.retweetId = retweetId;
-        this.textContent = textContent;
+    @OneToMany(mappedBy = "tweet")
+    private List<Media> media;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tweetlike",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private List<Account> likes;
+
+    @ManyToMany
+    @JoinTable(
+            name = "hashtag",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    private List<Hashtag> hashtags;
+
+    @ManyToMany
+    @JoinTable(
+            name = "mention",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private List<Account> mentions;
+
+    public Tweet() {
     }
 
     public UUID getId() {
@@ -52,12 +77,12 @@ public class Tweet {
         this.id = id;
     }
 
-    public UUID getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(UUID accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Instant getCreated() {
@@ -68,28 +93,36 @@ public class Tweet {
         this.created = created;
     }
 
-    public UUID getParentTweetId() {
-        return parentTweetId;
+    public Tweet getParentTweet() {
+        return parentTweet;
     }
 
-    public void setParentTweetId(UUID parentTweetId) {
-        this.parentTweetId = parentTweetId;
+    public void setParentTweet(Tweet parentTweet) {
+        this.parentTweet = parentTweet;
     }
 
-    public UUID getQuoteTweetId() {
-        return quoteTweetId;
+    public Tweet getQuoteTweet() {
+        return quoteTweet;
     }
 
-    public void setQuoteTweetId(UUID quoteTweetId) {
-        this.quoteTweetId = quoteTweetId;
+    public void setQuoteTweet(Tweet quoteTweet) {
+        this.quoteTweet = quoteTweet;
     }
 
-    public UUID getRetweetId() {
-        return retweetId;
+    public Tweet getRetweet() {
+        return retweet;
     }
 
-    public void setRetweetId(UUID retweetId) {
-        this.retweetId = retweetId;
+    public void setRetweet(Tweet retweet) {
+        this.retweet = retweet;
+    }
+
+    public List<Tweet> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Tweet> replies) {
+        this.replies = replies;
     }
 
     public String getTextContent() {
@@ -100,44 +133,35 @@ public class Tweet {
         this.textContent = textContent;
     }
 
-    public TweetDto convertToDto() {
-        return new TweetDto(
-                getId(),
-                getAccountId(),
-                getCreated(),
-                getParentTweetId(),
-                getQuoteTweetId(),
-                getRetweetId(),
-                getTextContent()
-        );
+    public List<Media> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<Media> media) {
+        this.media = media;
+    }
+
+    public List<Account> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Account> likes) {
+        this.likes = likes;
+    }
+
+    public List<Hashtag> getHashtags() {
+        return hashtags;
+    }
+
+    public void setHashtags(List<Hashtag> hashtags) {
+        this.hashtags = hashtags;
+    }
+
+    public List<Account> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(List<Account> mentions) {
+        this.mentions = mentions;
     }
 }
-
-/*
-CREATE TABLE tweet (
-
-    id UUID NOT NULL,
-    account_id UUID NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    parent_tweet_id UUID,
-    quote_tweet_id UUID,
-    retweet_id UUID,
-
-    text_content varchar(280),
-
-    CONSTRAINT tweet_pk PRIMARY KEY (id),
-
-    -- if tweet you replied to gets deleted, reply is NOT deleted
-    CONSTRAINT parent_fk FOREIGN KEY (parent_tweet_id) REFERENCES tweet (id),
-
-    -- if original tweet gets deleted, quote tweet is NOT deleted
-    CONSTRAINT quote_fk FOREIGN KEY (quote_tweet_id) REFERENCES tweet (id),
-
-    -- if original tweet gets deleted, retweet gets deleted
-    CONSTRAINT retweet_fk FOREIGN KEY (retweet_id) REFERENCES tweet (id) ON DELETE CASCADE,
-
-    -- if account gets deleted, tweet gets deleted
-    CONSTRAINT account_fk FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE
-);
-*/

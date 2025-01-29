@@ -1,16 +1,16 @@
 package y_rest.models.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import y_rest.models.dto.AccountDto;
+import jakarta.persistence.*;
+
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table
 public class Account {
+
+    // maybe add a pinned tweet feature?
 
     @Id
     @Column
@@ -22,30 +22,52 @@ public class Account {
     @Column
     private String handle;
 
+    @Column(name = "display")
+    private String displayName;
+
     @Column
     private String email;
 
     @Column
     private String phone;
 
+    @Column(name = "profile_pic_url")
+    private String profilePicUrl;
+
+    @Column(name = "banner_url")
+    private String bannerPicUrl;
+
     @Column(name = "hashed_pw")
     private String hashedPw;
 
     @Column
-    private Boolean priv;
-
-    @Column
     private String bio;
 
-    public Account(UUID id, Instant created, String handle, String email, String phone, String hashedPw, Boolean priv, String bio) {
-        this.id = id;
-        this.created = created;
-        this.handle = handle;
-        this.email = email;
-        this.phone = phone;
-        this.hashedPw = hashedPw;
-        this.priv = priv;
-        this.bio = bio;
+    @ManyToMany
+    @JoinTable(
+            name = "follow", // existing join table
+            joinColumns = @JoinColumn(name = "sheep_id"),
+            inverseJoinColumns = @JoinColumn(name = "shepherd_id")
+    )
+    private List<Account> following;
+
+    @ManyToMany(mappedBy = "following")
+    private List<Account> followers;
+
+    // loads all the likes
+    @ManyToMany
+    @JoinTable(
+            name = "tweetlike",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "tweet_id")
+    )
+    private List<Tweet> likes;
+
+    // only used when you search for an at, we don't actually need/use this in the account dto
+    @ManyToMany(mappedBy = "mentions")
+    private List<Tweet> mentionedTweets;
+
+    public Account() {
     }
 
     public UUID getId() {
@@ -72,6 +94,14 @@ public class Account {
         this.handle = handle;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -88,6 +118,14 @@ public class Account {
         this.phone = phone;
     }
 
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
+    public String getBannerPicUrl() {
+        return bannerPicUrl;
+    }
+
     public String getHashedPw() {
         return hashedPw;
     }
@@ -96,32 +134,36 @@ public class Account {
         this.hashedPw = hashedPw;
     }
 
-    public Boolean getPriv() {
-        return priv;
-    }
-
-    public void setPriv(Boolean priv) {
-        this.priv = priv;
-    }
-
     public String getBio() {
         return bio;
     }
 
-    public void setBio(String bio){
+    public void setBio(String bio) {
         this.bio = bio;
     }
 
-    public AccountDto convertToDto() {
-        return new AccountDto(
-                getId(),
-                getCreated(),
-                getHandle(),
-                getEmail(),
-                getPhone(),
-//                getHashedPw(),
-                getPriv(),
-                getBio()
-        );
+    public List<Account> getFollowing() {
+        return following;
     }
+
+    public void setFollowing(List<Account> following) {
+        this.following = following;
+    }
+
+    public List<Account> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<Account> followers) {
+        this.followers = followers;
+    }
+
+    public List<Tweet> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Tweet> likes) {
+        this.likes = likes;
+    }
+
 }

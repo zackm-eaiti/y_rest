@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import y_rest.models.dto.TweetDto;
-import y_rest.models.entity.Tweet;
+import y_rest.models.dto.tweet.TweetDto;
 import y_rest.service.TweetService;
 
 import java.util.List;
@@ -19,7 +18,9 @@ public class TweetResource {
 
     @GetMapping
     public List<TweetDto> getTweets() {
-        return service.listTweets().stream().map(Tweet::convertToDto).toList();
+        return service.listTweets().stream()
+                .map(TweetDto::fromTweet)
+                .toList();
     }
 
 }
