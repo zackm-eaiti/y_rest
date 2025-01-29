@@ -42,6 +42,7 @@ public class Tweet {
     @OneToMany(mappedBy = "tweet")
     private List<Media> media;
 
+    // switch to tweetlikes
     @ManyToMany
     @JoinTable(
             name = "tweetlike",
