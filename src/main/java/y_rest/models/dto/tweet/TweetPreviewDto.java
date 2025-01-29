@@ -20,7 +20,7 @@ public record TweetPreviewDto(
         TweetPreviewDto retweet,
         String textContent,
         List<EmbeddedMediaDto> media,
-        List<AccountPreviewDto> likes,
+        long likes,
         List<HashtagDto> hashtags
 ) {
     public static TweetPreviewDto fromTweet(Tweet tweet) {
@@ -35,7 +35,7 @@ public record TweetPreviewDto(
                 TweetPreviewDto.fromTweet(tweet.getRetweet()),
                 tweet.getTextContent(),
                 tweet.getMedia().stream().map(EmbeddedMediaDto::fromMedia).toList(),
-                tweet.getLikes().stream().map(AccountPreviewDto::fromAccount).toList(),
+                tweet.getLikes(),
                 tweet.getHashtags().stream().map(HashtagDto::fromHashtag).toList()
         );
     }

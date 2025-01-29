@@ -23,7 +23,7 @@ public record TweetDto(
         String textContent,
 
         List<EmbeddedMediaDto> media,
-        List<AccountPreviewDto> likes,
+        long likes,
         List<HashtagDto> hashtags,
         List<AccountPreviewDto> mentions
 ) {
@@ -45,7 +45,7 @@ public record TweetDto(
                 tweet.getTextContent(),
 
                 tweet.getMedia().stream().map(EmbeddedMediaDto::fromMedia).toList(),
-                tweet.getLikes().stream().map(AccountPreviewDto::fromAccount).toList(),
+                tweet.getLikes(),
                 tweet.getHashtags().stream().map(HashtagDto::fromHashtag).toList(),
                 tweet.getMentions().stream().map(AccountPreviewDto::fromAccount).toList()
         );

@@ -22,5 +22,4 @@ public class TweetResource {
                 .map(TweetDto::fromTweet)
                 .toList();
     }
-
 }

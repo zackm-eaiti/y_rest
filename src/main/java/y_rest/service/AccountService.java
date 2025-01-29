@@ -7,6 +7,7 @@ import y_rest.models.entity.Account;
 import y_rest.models.repository.AccountRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -14,7 +15,16 @@ public class AccountService {
     @Autowired
     private AccountRepository repo;
 
-    public List<Account> listUsers() {
+    public List<Account> listAccounts() {
         return repo.findAll();
+    }
+
+    public Account getAccountById(UUID id) {
+        return repo.findById(id).orElse(null);
+    }
+
+    // make case insensitive
+    public Account getAccountByHandle(String handle) {
+        return repo.findByHandle(handle).orElse(null);
     }
 }

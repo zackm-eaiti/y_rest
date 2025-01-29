@@ -54,7 +54,7 @@ public class Account {
     @ManyToMany(mappedBy = "following")
     private List<Account> followers;
 
-    // loads all the likes - switch to tweetlike to avoid loading all these accounts
+    // loads all the likes - switch to tweetlike to avoid loading all these accounts 
     @ManyToMany
     @JoinTable(
             name = "tweetlike",

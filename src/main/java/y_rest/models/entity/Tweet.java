@@ -1,6 +1,7 @@
 package y_rest.models.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Formula;
 
 import java.time.Instant;
 import java.util.List;
@@ -42,14 +43,16 @@ public class Tweet {
     @OneToMany(mappedBy = "tweet")
     private List<Media> media;
 
-    // switch to tweetlikes
-    @ManyToMany
-    @JoinTable(
-            name = "tweetlike",
-            joinColumns = @JoinColumn(name = "tweet_id"),
-            inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
-    private List<Account> likes;
+    // switch to a number
+//    @ManyToMany
+//    @JoinTable(
+//            name = "tweetlike",
+//            joinColumns = @JoinColumn(name = "tweet_id"),
+//            inverseJoinColumns = @JoinColumn(name = "account_id")
+//    )
+//    private List<Account> likes;
+    @Formula("(SELECT COUNT(tl.id) FROM tweetlike tl WHERE tl.tweet_id = id)")
+    private long likes;
 
     @ManyToMany
     @JoinTable(
@@ -142,11 +145,11 @@ public class Tweet {
         this.media = media;
     }
 
-    public List<Account> getLikes() {
+    public long getLikes() {
         return likes;
     }
 
-    public void setLikes(List<Account> likes) {
+    public void setLikes(long likes) {
         this.likes = likes;
     }
 
