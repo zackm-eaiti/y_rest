@@ -8,5 +8,4 @@ public class YRestApplication {
     public static void main(String[] args) {
         SpringApplication.run(YRestApplication.class, args);
     }
-
 }

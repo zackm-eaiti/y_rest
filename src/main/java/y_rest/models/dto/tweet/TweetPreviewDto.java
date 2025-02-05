@@ -1,6 +1,5 @@
 package y_rest.models.dto.tweet;
 
-import y_rest.models.dto.HashtagDto;
 import y_rest.models.dto.account.AccountPreviewDto;
 import y_rest.models.dto.media.EmbeddedMediaDto;
 import y_rest.models.entity.Tweet;
@@ -20,23 +19,21 @@ public record TweetPreviewDto(
         TweetPreviewDto retweet,
         String textContent,
         List<EmbeddedMediaDto> media,
-        List<AccountPreviewDto> likes,
-        List<HashtagDto> hashtags
+        long likes
 ) {
-    public static TweetPreviewDto fromTweet(Tweet tweet) {
+    public static TweetPreviewDto create(Tweet tweet) {
         if (tweet == null) return null;
 
         return new TweetPreviewDto(
                 tweet.getId(),
                 AccountPreviewDto.fromAccount(tweet.getAccount()),
                 tweet.getCreated(),
-                TweetPreviewDto.fromTweet(tweet.getParentTweet()),
-                TweetPreviewDto.fromTweet(tweet.getQuoteTweet()),
-                TweetPreviewDto.fromTweet(tweet.getRetweet()),
+                TweetPreviewDto.create(tweet.getParentTweet()),
+                TweetPreviewDto.create(tweet.getQuoteTweet()),
+                TweetPreviewDto.create(tweet.getRetweet()),
                 tweet.getTextContent(),
                 tweet.getMedia().stream().map(EmbeddedMediaDto::fromMedia).toList(),
-                tweet.getLikes().stream().map(AccountPreviewDto::fromAccount).toList(),
-                tweet.getHashtags().stream().map(HashtagDto::fromHashtag).toList()
+                tweet.getLikes()
         );
     }
 }

@@ -1,6 +1,4 @@
 package y_rest.models.dto.account;
-
-import y_rest.models.dto.tweet.TweetPreviewDto;
 import y_rest.models.entity.Account;
 
 import java.time.Instant;
@@ -14,13 +12,11 @@ public record AccountDto(
         String handle,
         String displayName,
         String email,
-        String phone,
         String profilePicUrl,
         String bannerPicUrl,
         String bio,
-        List<AccountPreviewDto> following,
-        List<AccountPreviewDto> followers,
-        List<TweetPreviewDto> likes
+        List<AccountPreviewDto> following, // preview essentially forces max recursive depth of 1 on entity loading
+        List<AccountPreviewDto> followers
 ) {
     public static AccountDto fromAccount(Account account) {
         return new AccountDto(
@@ -29,13 +25,11 @@ public record AccountDto(
                 account.getHandle(),
                 account.getDisplayName(),
                 account.getEmail(),
-                account.getPhone(),
                 account.getProfilePicUrl(),
                 account.getBannerPicUrl(),
                 account.getBio(),
-                account.getFollowing().stream().map(AccountPreviewDto::fromAccount).toList(),
-                account.getFollowers().stream().map(AccountPreviewDto::fromAccount).toList(),
-                account.getLikes().stream().map(TweetPreviewDto::fromTweet).toList()
+                account.getShepherds().stream().map(AccountPreviewDto::fromAccount).toList(),
+                account.getSheep().stream().map(AccountPreviewDto::fromAccount).toList()
         );
     }
 }

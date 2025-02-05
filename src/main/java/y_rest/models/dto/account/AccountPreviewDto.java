@@ -5,7 +5,7 @@ import y_rest.models.entity.Account;
 import java.util.UUID;
 
 // used when we are viewing accounts in lists,
-// and to avoid circular references in follows, and likes
+// and to avoid circular references in follows
 public record AccountPreviewDto(
         UUID id,
         String handle,
@@ -13,7 +13,6 @@ public record AccountPreviewDto(
         String profilePicUrl,
         String bio
 ) {
-
     public static AccountPreviewDto fromAccount(Account account) {
         return new AccountPreviewDto(
                 account.getId(),

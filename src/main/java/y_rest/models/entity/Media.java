@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 
-// this entity exists explicitly so that I can create the media DTO
+// this entity exists so that I can create the media DTO
 @Entity
 @Table
 public class Media {
@@ -13,9 +13,8 @@ public class Media {
     @Column
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tweet_id")
-    private Tweet tweet;
+    @Column(name = "tweet_id")
+    private UUID tweetId;
 
     @Column(name = "media_type")
     private String mediaType;
@@ -25,20 +24,19 @@ public class Media {
 
     public Media() {}
 
+    public Media(UUID id, UUID tweetId, String mediaType, String url) {
+        this.id = id;
+        this.tweetId = tweetId;
+        this.mediaType = mediaType;
+        this.url = url;
+    }
+
     public UUID getId() {
         return id;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Tweet getTweet() {
-        return tweet;
-    }
-
-    public void setTweet(Tweet tweet) {
-        this.tweet = tweet;
     }
 
     public String getMediaType() {
@@ -55,5 +53,13 @@ public class Media {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public UUID getTweetId() {
+        return tweetId;
+    }
+
+    public void setTweetId(UUID tweetId) {
+        this.tweetId = tweetId;
     }
 }
