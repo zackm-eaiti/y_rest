@@ -15,7 +15,7 @@ public class Tweet {
     @Column
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -34,43 +34,36 @@ public class Tweet {
     @JoinColumn(name = "retweet_id")
     private Tweet retweet;
 
-    @OneToMany(mappedBy = "parentTweet", fetch = FetchType.LAZY)
-    private List<Tweet> replies;
-
     @Column(name = "text_content")
     private String textContent;
 
-    @OneToMany(mappedBy = "tweet")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "tweet_id")
     private List<Media> media;
 
-    // switch to a number
-//    @ManyToMany
-//    @JoinTable(
-//            name = "tweetlike",
-//            joinColumns = @JoinColumn(name = "tweet_id"),
-//            inverseJoinColumns = @JoinColumn(name = "account_id")
-//    )
-//    private List<Account> likes;
     @Formula("(SELECT COUNT(tl.id) FROM tweetlike tl WHERE tl.tweet_id = id)")
     private long likes;
 
-    @ManyToMany
-    @JoinTable(
-            name = "hashtag",
-            joinColumns = @JoinColumn(name = "tweet_id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
-    private List<Hashtag> hashtags;
-
-    @ManyToMany
-    @JoinTable(
-            name = "mention",
-            joinColumns = @JoinColumn(name = "tweet_id"),
-            inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
-    private List<Account> mentions;
-
     public Tweet() {
+    }
+
+    public Tweet(
+            UUID id,
+            Account account,
+            Tweet parentTweet,
+            Tweet quoteTweet,
+            Tweet retweet,
+            List<Media> media,
+            String textContent
+    ) {
+        this.setId(id);
+        this.setAccount(account);
+        this.setCreated(Instant.now());
+        this.setParentTweet(parentTweet);
+        this.setQuoteTweet(quoteTweet);
+        this.setRetweet(retweet);
+        this.setMedia(media);
+        this.setTextContent(textContent);
     }
 
     public UUID getId() {
@@ -121,28 +114,12 @@ public class Tweet {
         this.retweet = retweet;
     }
 
-    public List<Tweet> getReplies() {
-        return replies;
-    }
-
-    public void setReplies(List<Tweet> replies) {
-        this.replies = replies;
-    }
-
     public String getTextContent() {
         return textContent;
     }
 
     public void setTextContent(String textContent) {
         this.textContent = textContent;
-    }
-
-    public List<Media> getMedia() {
-        return media;
-    }
-
-    public void setMedia(List<Media> media) {
-        this.media = media;
     }
 
     public long getLikes() {
@@ -153,19 +130,11 @@ public class Tweet {
         this.likes = likes;
     }
 
-    public List<Hashtag> getHashtags() {
-        return hashtags;
+    public List<Media> getMedia() {
+        return media;
     }
 
-    public void setHashtags(List<Hashtag> hashtags) {
-        this.hashtags = hashtags;
-    }
-
-    public List<Account> getMentions() {
-        return mentions;
-    }
-
-    public void setMentions(List<Account> mentions) {
-        this.mentions = mentions;
+    public void setMedia(List<Media> media) {
+        this.media = media;
     }
 }

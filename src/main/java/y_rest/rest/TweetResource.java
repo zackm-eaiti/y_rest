@@ -1,25 +1,39 @@
 package y_rest.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import y_rest.models.dto.tweet.TweetDto;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import y_rest.models.dto.tweet.TweetFormData;
+import y_rest.service.TweetLikeService;
 import y_rest.service.TweetService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tweet")
 public class TweetResource {
 
     @Autowired
-    private TweetService service;
+    private TweetService tweetService;
 
-    @GetMapping
-    public List<TweetDto> getTweets() {
-        return service.listTweets().stream()
-                .map(TweetDto::fromTweet)
-                .toList();
+    @Autowired
+    private TweetLikeService tlService;
+
+//    @GetMapping("/search/tweet")
+//    public List<TweetPreviewDto> searchForPhrase(@RequestParam("phrase") String phrase) {
+//        return null;
+//    }
+
+    @PostMapping("/post_tweet")
+    public ResponseEntity<?> postTweet(@RequestBody TweetFormData formData) {
+        return tweetService.postTweet(formData);
+    }
+
+    @GetMapping("/{tweet_id}")
+    public ResponseEntity<?> getTweet(@PathVariable("tweet_id") String id) {
+        return tweetService.getTweetDtoById(id);
+    }
+
+    @PostMapping("/{tweet_id}/post_like")
+    public ResponseEntity<?> postTweetLike(@PathVariable("tweet_id") String tweet_id, @RequestParam("account_id") String account_id) {
+        return tlService.postLike(tweet_id, account_id);
     }
 }

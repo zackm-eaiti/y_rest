@@ -13,7 +13,6 @@ public record AccountPreviewDto(
         String profilePicUrl,
         String bio
 ) {
-
     public static AccountPreviewDto fromAccount(Account account) {
         return new AccountPreviewDto(
                 account.getId(),

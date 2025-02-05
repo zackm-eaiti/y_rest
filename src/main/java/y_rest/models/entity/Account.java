@@ -1,8 +1,10 @@
 package y_rest.models.entity;
 
 import jakarta.persistence.*;
+import y_rest.models.dto.account.AccountFormData;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,13 +30,10 @@ public class Account {
     @Column
     private String email;
 
-    @Column
-    private String phone;
-
     @Column(name = "profile_pic_url")
     private String profilePicUrl;
 
-    @Column(name = "banner_url")
+    @Column(name = "banner_pic_url")
     private String bannerPicUrl;
 
     @Column(name = "hashed_pw")
@@ -44,30 +43,65 @@ public class Account {
     private String bio;
 
     @ManyToMany
-    @JoinTable(
-            name = "follow", // existing join table
-            joinColumns = @JoinColumn(name = "sheep_id"),
-            inverseJoinColumns = @JoinColumn(name = "shepherd_id")
-    )
-    private List<Account> following;
+    @JoinTable(name = "follow", // existing join table
+            joinColumns = @JoinColumn(name = "sheep_id"), inverseJoinColumns = @JoinColumn(name = "shepherd_id"))
+    private List<Account> shepherds;
 
-    @ManyToMany(mappedBy = "following")
-    private List<Account> followers;
-
-    // loads all the likes - switch to tweetlike to avoid loading all these accounts 
-    @ManyToMany
-    @JoinTable(
-            name = "tweetlike",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "tweet_id")
-    )
-    private List<Tweet> likes;
-
-    // only used when you search for an at, we don't actually need/use this in the account dto
-    @ManyToMany(mappedBy = "mentions")
-    private List<Tweet> mentionedTweets;
+    @ManyToMany(mappedBy = "shepherds")
+    private List<Account> sheep;
 
     public Account() {
+    }
+
+    public static Account fromFormData(AccountFormData formData) {
+        Account account = new Account();
+
+        // auto-gen
+        account.setId(UUID.randomUUID());
+        account.setCreated(Instant.now());
+
+        // form data
+        account.setHandle(formData.handle());
+        account.setDisplayName(formData.displayName());
+        account.setEmail(formData.email());
+        // TODO: Hash
+        account.setHashedPw(formData.password());
+
+        account.setProfilePicUrl(formData.profilePicUrl());
+        account.setBannerPicUrl(formData.bannerPicUrl());
+        account.setBio(formData.bio());
+
+        // "My following" means the same as "My followers"
+        account.setShepherds(new ArrayList<>());
+        account.setSheep(new ArrayList<>());
+
+        return account;
+    }
+
+    public Account updateFromFormData(AccountFormData formData) {
+        // null = no change
+        if (formData.handle() != null) {
+            this.setHandle(formData.handle());
+        }
+        if (formData.displayName() != null) {
+            this.setDisplayName(formData.displayName());
+        }
+        if (formData.email() != null) {
+            this.setEmail(formData.email());
+        }
+        if (formData.password() != null) {
+            this.setHashedPw(formData.password());
+        }
+        if (formData.profilePicUrl() != null) {
+            this.setProfilePicUrl(formData.profilePicUrl());
+        }
+        if (formData.bannerPicUrl() != null) {
+            this.setBannerPicUrl(formData.bannerPicUrl());
+        }
+        if (formData.bio() != null) {
+            this.setBio(formData.bio());
+        }
+        return this;
     }
 
     public UUID getId() {
@@ -110,20 +144,20 @@ public class Account {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getProfilePicUrl() {
         return profilePicUrl;
     }
 
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
+    }
+
     public String getBannerPicUrl() {
         return bannerPicUrl;
+    }
+
+    public void setBannerPicUrl(String bannerPicUrl) {
+        this.bannerPicUrl = bannerPicUrl;
     }
 
     public String getHashedPw() {
@@ -142,28 +176,20 @@ public class Account {
         this.bio = bio;
     }
 
-    public List<Account> getFollowing() {
-        return following;
+    public List<Account> getShepherds() {
+        return shepherds;
     }
 
-    public void setFollowing(List<Account> following) {
-        this.following = following;
+    public void setShepherds(List<Account> shepherds) {
+        this.shepherds = shepherds;
     }
 
-    public List<Account> getFollowers() {
-        return followers;
+    public List<Account> getSheep() {
+        return sheep;
     }
 
-    public void setFollowers(List<Account> followers) {
-        this.followers = followers;
-    }
-
-    public List<Tweet> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Tweet> likes) {
-        this.likes = likes;
+    public void setSheep(List<Account> sheep) {
+        this.sheep = sheep;
     }
 
 }

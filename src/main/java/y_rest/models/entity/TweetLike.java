@@ -1,10 +1,6 @@
 package y_rest.models.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
@@ -15,13 +11,21 @@ public class TweetLike {
     @Column
     private UUID id;
 
-    @Column(name = "tweet_id")
-    private UUID tweetId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tweet_id", referencedColumnName = "id")
+    private Tweet tweet;
 
-    @Column(name = "user_id")
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
 
     public TweetLike() {
+    }
+
+    public TweetLike(UUID id, Tweet tweet, Account account) {
+        this.id = id;
+        this.tweet = tweet;
+        this.account = account;
     }
 
     public UUID getId() {
@@ -32,19 +36,19 @@ public class TweetLike {
         this.id = id;
     }
 
-    public UUID getTweetId() {
-        return tweetId;
+    public Tweet getTweet() {
+        return tweet;
     }
 
-    public void setTweetId(UUID tweetId) {
-        this.tweetId = tweetId;
+    public void setTweet(Tweet tweet) {
+        this.tweet = tweet;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }
