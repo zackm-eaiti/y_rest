@@ -21,16 +21,16 @@ public class TweetLikeService {
 
     @Autowired TweetService tweetService;
 
-    public ResponseEntity<?> postLike(String tweet_id, String account_id) {
+    public ResponseEntity<?> postLike(String tweetId, String accountHandle) {
         // validate tweet exists
-        var tweetResponse = tweetService.getTweetById(tweet_id);
+        var tweetResponse = tweetService.getTweetById(tweetId);
         if (tweetResponse.getStatusCode().isError()) {
             return tweetResponse;
         }
         var tweet = (Tweet) tweetResponse.getBody();
 
         // validate user exists
-        var accountResponse = accountService.getUserById(account_id);
+        var accountResponse = accountService.getUserByHandle(accountHandle);
         if (accountResponse.getStatusCode().isError()) {
             return accountResponse;
         }
@@ -44,5 +44,31 @@ public class TweetLikeService {
         TweetLike tl = new TweetLike(UUID.randomUUID(), tweet, account);
         repo.save(tl);
         return ResponseEntity.ok("Liking was successful");
+    }
+
+    public ResponseEntity<?> deleteLike(String tweetId, String accountHandle) {
+        // validate tweet exists
+        var tweetResponse = tweetService.getTweetById(tweetId);
+        if (tweetResponse.getStatusCode().isError()) {
+            return tweetResponse;
+        }
+        var tweet = (Tweet) tweetResponse.getBody();
+
+        // validate user exists
+        var accountResponse = accountService.getUserByHandle(accountHandle);
+        if (accountResponse.getStatusCode().isError()) {
+            return accountResponse;
+        }
+        var account = (Account) accountResponse.getBody();
+
+        // ensure tweetlike exists. is this really necessary? idk - just adding for detailed error messages
+        var tl = repo.findByAccountAndTweet(account, tweet);
+        if (tl.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(String.format("account %s has not liked tweet %s", accountHandle, tweetId));
+        }
+
+        repo.delete(tl.get());
+        return ResponseEntity.ok("like was removed");
     }
 }

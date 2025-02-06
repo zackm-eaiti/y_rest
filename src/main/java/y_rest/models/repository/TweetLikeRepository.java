@@ -6,9 +6,11 @@ import y_rest.models.entity.Account;
 import y_rest.models.entity.Tweet;
 import y_rest.models.entity.TweetLike;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TweetLikeRepository extends JpaRepository<TweetLike, UUID> {
-    boolean existsByAccountAndTweet(Account account, Tweet tweet);
+    Optional<TweetLike> findByAccountAndTweet(Account a, Tweet t);
+    boolean existsByAccountAndTweet(Account a, Tweet t);
 }

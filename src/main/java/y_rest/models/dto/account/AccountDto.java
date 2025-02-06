@@ -15,7 +15,7 @@ public record AccountDto(
         String profilePicUrl,
         String bannerPicUrl,
         String bio,
-        List<AccountPreviewDto> following, // preview essentially forces max recursive depth of 1 on entity loading
+        List<AccountPreviewDto> following,
         List<AccountPreviewDto> followers
 ) {
     public static AccountDto fromAccount(Account account) {

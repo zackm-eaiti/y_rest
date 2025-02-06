@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import y_rest.models.dto.account.AccountFormData;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table
@@ -45,37 +43,35 @@ public class Account {
     @ManyToMany
     @JoinTable(name = "follow", // existing join table
             joinColumns = @JoinColumn(name = "sheep_id"), inverseJoinColumns = @JoinColumn(name = "shepherd_id"))
-    private List<Account> shepherds;
+    private Set<Account> shepherds;
 
     @ManyToMany(mappedBy = "shepherds")
-    private List<Account> sheep;
+    private Set<Account> sheep;
 
     public Account() {
     }
 
-    public static Account fromFormData(AccountFormData formData) {
-        Account account = new Account();
+    public Account(AccountFormData formData) {
 
         // auto-gen
-        account.setId(UUID.randomUUID());
-        account.setCreated(Instant.now());
+        this.setId(UUID.randomUUID());
+        this.setCreated(Instant.now());
 
         // form data
-        account.setHandle(formData.handle());
-        account.setDisplayName(formData.displayName());
-        account.setEmail(formData.email());
-        // TODO: Hash
-        account.setHashedPw(formData.password());
+        this.setHandle(formData.handle());
+        this.setDisplayName(formData.displayName());
+        this.setEmail(formData.email());
 
-        account.setProfilePicUrl(formData.profilePicUrl());
-        account.setBannerPicUrl(formData.bannerPicUrl());
-        account.setBio(formData.bio());
+        // TODO: Hash
+        this.setHashedPw(formData.password());
+
+        this.setProfilePicUrl(formData.profilePicUrl());
+        this.setBannerPicUrl(formData.bannerPicUrl());
+        this.setBio(formData.bio());
 
         // "My following" means the same as "My followers"
-        account.setShepherds(new ArrayList<>());
-        account.setSheep(new ArrayList<>());
-
-        return account;
+        this.setShepherds(new HashSet<>());
+        this.setSheep(new HashSet<>());
     }
 
     public Account updateFromFormData(AccountFormData formData) {
@@ -176,19 +172,19 @@ public class Account {
         this.bio = bio;
     }
 
-    public List<Account> getShepherds() {
+    public Set<Account> getShepherds() {
         return shepherds;
     }
 
-    public void setShepherds(List<Account> shepherds) {
+    public void setShepherds(Set<Account> shepherds) {
         this.shepherds = shepherds;
     }
 
-    public List<Account> getSheep() {
+    public Set<Account> getSheep() {
         return sheep;
     }
 
-    public void setSheep(List<Account> sheep) {
+    public void setSheep(Set<Account> sheep) {
         this.sheep = sheep;
     }
 

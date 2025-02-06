@@ -8,33 +8,24 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-// used when you click on a tweet
-public record TweetDto(
+// just to make the json cleaner
+public record ReplyDto(
         UUID id,
         AccountPreviewDto account,
         Instant created,
-        TweetPreviewDto parentTweet,
-        List<ReplyDto> replies,
-        TweetPreviewDto retweet,
         String textContent,
         List<EmbeddedMediaDto> media,
         long likeCount,
         long repostCount
 ) {
-    public static TweetDto create(Tweet tweet, List<Tweet> replies) {
+    public static ReplyDto create(Tweet tweet) {
         if (tweet == null) return null;
 
-        return new TweetDto(
+        return new ReplyDto(
                 tweet.getId(),
                 AccountPreviewDto.fromAccount(tweet.getAccount()),
                 tweet.getCreated(),
-
-                TweetPreviewDto.create(tweet.getParentTweet()),
-                replies.stream().map(ReplyDto::create).toList(),
-                TweetPreviewDto.create(tweet.getRetweet()),
-
                 tweet.getTextContent(),
-
                 tweet.getMedia().stream().map(EmbeddedMediaDto::create).toList(),
                 tweet.getLikeCount(),
                 tweet.getRepostCount()

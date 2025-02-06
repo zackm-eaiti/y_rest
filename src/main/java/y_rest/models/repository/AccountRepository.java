@@ -14,7 +14,6 @@ import java.util.UUID;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, UUID>  {
     Optional<Account> findByHandle(String handle);
-
     boolean existsByHandle(String handle);
     boolean existsByEmail(String email);
 
@@ -29,4 +28,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID>  {
 
     @Query("SELECT t FROM Tweet t where (t.parentTweet IS NOT NULL or t.retweet IS NOT NULL) and t.account.handle = :handle ")
     List<Tweet> findRepliesByAccountHandle(@Param("handle") String handle);
+
+
 }
