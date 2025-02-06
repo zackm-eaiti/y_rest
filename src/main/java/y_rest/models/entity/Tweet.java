@@ -7,6 +7,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+
+// we aren't storing hashtags or mentions, as they are stored in the text.
+// in the front end, we will parse the text, when we find a mention or tag
+// we will create a link that will search for that hashtag or mention
 @Entity
 @Table
 public class Tweet {
@@ -15,7 +19,7 @@ public class Tweet {
     @Column
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -26,10 +30,7 @@ public class Tweet {
     @JoinColumn(name = "parent_tweet_id")
     private Tweet parentTweet;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quote_tweet_id")
-    private Tweet quoteTweet;
-
+    // a quote tweet will just be a retweet with text content, easy to check in frontend
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retweet_id")
     private Tweet retweet;
@@ -42,7 +43,10 @@ public class Tweet {
     private List<Media> media;
 
     @Formula("(SELECT COUNT(tl.id) FROM tweetlike tl WHERE tl.tweet_id = id)")
-    private long likes;
+    private long likeCount;
+
+    @Formula("(SELECT COUNT(t.id) FROM tweet t WHERE t.retweet_id = id AND t.text_content IS NULL)")
+    private long repostCount;
 
     public Tweet() {
     }
@@ -51,7 +55,6 @@ public class Tweet {
             UUID id,
             Account account,
             Tweet parentTweet,
-            Tweet quoteTweet,
             Tweet retweet,
             List<Media> media,
             String textContent
@@ -60,7 +63,6 @@ public class Tweet {
         this.setAccount(account);
         this.setCreated(Instant.now());
         this.setParentTweet(parentTweet);
-        this.setQuoteTweet(quoteTweet);
         this.setRetweet(retweet);
         this.setMedia(media);
         this.setTextContent(textContent);
@@ -98,14 +100,6 @@ public class Tweet {
         this.parentTweet = parentTweet;
     }
 
-    public Tweet getQuoteTweet() {
-        return quoteTweet;
-    }
-
-    public void setQuoteTweet(Tweet quoteTweet) {
-        this.quoteTweet = quoteTweet;
-    }
-
     public Tweet getRetweet() {
         return retweet;
     }
@@ -122,12 +116,8 @@ public class Tweet {
         this.textContent = textContent;
     }
 
-    public long getLikes() {
-        return likes;
-    }
-
-    public void setLikes(long likes) {
-        this.likes = likes;
+    public long getLikeCount() {
+        return likeCount;
     }
 
     public List<Media> getMedia() {
@@ -136,5 +126,9 @@ public class Tweet {
 
     public void setMedia(List<Media> media) {
         this.media = media;
+    }
+
+    public long getRepostCount() {
+        return repostCount;
     }
 }

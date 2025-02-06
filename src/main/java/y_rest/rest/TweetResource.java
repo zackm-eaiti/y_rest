@@ -17,11 +17,6 @@ public class TweetResource {
     @Autowired
     private TweetLikeService tlService;
 
-//    @GetMapping("/search/tweet")
-//    public List<TweetPreviewDto> searchForPhrase(@RequestParam("phrase") String phrase) {
-//        return null;
-//    }
-
     @PostMapping("/post_tweet")
     public ResponseEntity<?> postTweet(@RequestBody TweetFormData formData) {
         return tweetService.postTweet(formData);
@@ -33,7 +28,17 @@ public class TweetResource {
     }
 
     @PostMapping("/{tweet_id}/post_like")
-    public ResponseEntity<?> postTweetLike(@PathVariable("tweet_id") String tweet_id, @RequestParam("account_id") String account_id) {
-        return tlService.postLike(tweet_id, account_id);
+    public ResponseEntity<?> postTweetLike(@PathVariable("tweet_id") String tweetId, @RequestParam("account_handle") String accountHandle) {
+        return tlService.postLike(tweetId, accountHandle);
+    }
+
+    @DeleteMapping("/{tweet_id}/delete_like")
+    public ResponseEntity<?> deleteTweetLike(@PathVariable("tweet_id") String tweetId, @RequestParam("account_handle") String accountHandle) {
+        return tlService.deleteLike(tweetId, accountHandle);
+    }
+
+    @DeleteMapping("/{tweet_id}/delete")
+    public ResponseEntity<?> deleteTweet(@PathVariable("tweet_id") String tweetId) {
+        return tweetService.deleteTweet(tweetId);
     }
 }

@@ -13,6 +13,8 @@ public class Media {
     @Column
     private UUID id;
 
+    // not using a Tweet entity here because I'll never be searching by media. this is just so
+    // the tweet entity knows where to look to store this
     @Column(name = "tweet_id")
     private UUID tweetId;
 

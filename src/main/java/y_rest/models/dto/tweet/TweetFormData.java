@@ -6,16 +6,14 @@ import java.util.UUID;
 
 public record TweetFormData (
         // account info
-        UUID accountId,
+        String accountHandle,
 
         // tweet info
         UUID parentTweetId,
-        UUID quoteTweetId,
         UUID retweetId,
         String textContent,
         List<String> mediaUrls,
-        List<String> mediaTypes,
-        List<String> mentions // strings of handles
+        List<String> mediaTypes
 ) {
 }
 

@@ -9,17 +9,16 @@ import java.util.List;
 import java.util.UUID;
 
 // used when we are seeing a tweet as a reply,
-// and to avoid circular references with parent / and replies
 public record TweetPreviewDto(
         UUID id,
         AccountPreviewDto account,
         Instant created,
         TweetPreviewDto parentTweet,
-        TweetPreviewDto quoteTweet,
         TweetPreviewDto retweet,
         String textContent,
         List<EmbeddedMediaDto> media,
-        long likes
+        long likeCount,
+        long repostCount
 ) {
     public static TweetPreviewDto create(Tweet tweet) {
         if (tweet == null) return null;
@@ -29,11 +28,11 @@ public record TweetPreviewDto(
                 AccountPreviewDto.fromAccount(tweet.getAccount()),
                 tweet.getCreated(),
                 TweetPreviewDto.create(tweet.getParentTweet()),
-                TweetPreviewDto.create(tweet.getQuoteTweet()),
                 TweetPreviewDto.create(tweet.getRetweet()),
                 tweet.getTextContent(),
-                tweet.getMedia().stream().map(EmbeddedMediaDto::fromMedia).toList(),
-                tweet.getLikes()
+                tweet.getMedia().stream().map(EmbeddedMediaDto::create).toList(),
+                tweet.getLikeCount(),
+                tweet.getRepostCount()
         );
     }
 }

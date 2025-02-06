@@ -13,7 +13,7 @@ public record EmbeddedMediaDto(
         MediaType mediaType,
         String mediaUrl
 ) {
-    public static EmbeddedMediaDto fromMedia(Media media) {
+    public static EmbeddedMediaDto create(Media media) {
         return new EmbeddedMediaDto(
                 MediaType.valueOf(media.getMediaType()),
                 media.getUrl()

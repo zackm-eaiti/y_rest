@@ -12,11 +12,11 @@ public class TweetLike {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tweet_id", referencedColumnName = "id")
+    @JoinColumn(name = "tweet_id")
     private Tweet tweet;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     public TweetLike() {

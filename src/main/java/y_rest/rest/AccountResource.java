@@ -14,6 +14,7 @@ import java.util.List;
 I do switch back and forth from account to user a little here -
 this is just in the endpoints (and method names) to make the paths look nicer in the urls
  */
+
 @RestController
 @RequestMapping("/user")
 public class AccountResource {
@@ -30,13 +31,7 @@ public class AccountResource {
 
     @GetMapping("/{handle}")
     public ResponseEntity<?> getUser(@PathVariable("handle") String handle) {
-        return service.getUserByHandle(handle);
-    }
-
-    // for now, search by username and search by handle - what if no query request param? its fine for now but edit this?
-    @GetMapping("/search")
-    public List<AccountPreviewDto> searchForUser(@RequestParam("query") String query) {
-        return service.searchForUser(query);
+        return service.getUserDtoByHandle(handle);
     }
 
     // putting this in Account endpoints because I need to use account repo to check if handle exists
@@ -57,19 +52,28 @@ public class AccountResource {
     }
 
     @PostMapping("/{shepherd_handle}/post_follow")
-    public ResponseEntity<?> postFollow(@PathVariable("shepherd_handle") String shepherd_handle, @RequestParam("sheep_id") String sheep_id) {
-        return service.postFollow(shepherd_handle, sheep_id);
+    public ResponseEntity<?> postFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestParam("sheep_handle") String sheepHandle) {
+        return service.postFollow(shepherdHandle, sheepHandle);
+    }
+
+    @DeleteMapping("/{shepherd_handle}/delete_follow")
+    public ResponseEntity<?> deleteFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestParam("sheep_handle") String sheepHandle) {
+        return service.deleteFollow(shepherdHandle, sheepHandle);
     }
 
     // im well aware of how insecure this is, but this is just so its secure from the frontend
-    // prob need to generate a token every time we log in, send it to back end and store it. Ill figure that out later
-    @PatchMapping("/{targHandle}/settings")
-    public ResponseEntity<?> patchUser(
-            @RequestParam("currHandle") String currHandle,
-            @PathVariable("targHandle") String targHandle,
-            @RequestBody AccountFormData formData) {
-        return service.patchUser(currHandle, targHandle, formData);
+    // prob need to generate a token every time we log in, send it to back end and store it. I'll figure that out later
+    @PatchMapping("/{handle}/settings")
+    public ResponseEntity<?> patchUser(@PathVariable("handle") String handle, @RequestBody AccountFormData formData) {
+        return service.patchUser(handle, formData);
     }
+
+    // later, send a token to the backend, if it matches the targHandle token, then we are authenticated and authorized
+    @DeleteMapping("/{handle}/delete")
+    public ResponseEntity<?> deleteUser(@PathVariable("handle") String handle) {
+        return service.deleteUser(handle);
+    }
+
 
     // del acc
 }
