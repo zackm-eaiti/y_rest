@@ -1,6 +1,12 @@
 package y_rest.models.entity;
-
+import java.security.spec.KeySpec;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.SecureRandom;
+import java.util.Base64;
 import jakarta.persistence.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import y_rest.models.dto.account.AccountFormData;
 
 import java.time.Instant;
@@ -9,6 +15,7 @@ import java.util.*;
 @Entity
 @Table
 public class Account {
+    private static final Logger log = LogManager.getLogger(Account.class);
 
     // maybe add a pinned tweet feature?
 
@@ -38,6 +45,9 @@ public class Account {
     private String hashedPw;
 
     @Column
+    private String salt;
+
+    @Column
     private String bio;
 
     @ManyToMany
@@ -61,10 +71,8 @@ public class Account {
         this.setHandle(formData.handle());
         this.setDisplayName(formData.displayName());
         this.setEmail(formData.email());
-
-        // TODO: Hash
-        this.setHashedPw(formData.password());
-
+        this.setSalt(generateSalt(16));
+        this.setHashedPw(hashPassword(formData.password(), this.getSalt()));
         this.setProfilePicUrl(formData.profilePicUrl());
         this.setBannerPicUrl(formData.bannerPicUrl());
         this.setBio(formData.bio());
@@ -72,6 +80,11 @@ public class Account {
         // "My following" means the same as "My followers"
         this.setShepherds(new HashSet<>());
         this.setSheep(new HashSet<>());
+    }
+    
+    public boolean authenticate(String formPassword) {
+        String formHashed = hashPassword(formPassword, this.getSalt());
+        return formHashed.equals(this.getHashedPw());
     }
 
     public Account updateFromFormData(AccountFormData formData) {
@@ -188,4 +201,39 @@ public class Account {
         this.sheep = sheep;
     }
 
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public static String hashPassword(String password, String salt) {
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+        try {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (Exception e) {
+            log.error("e: ", e);
+        }
+        // i hate exceptions. Why not return some kind of useful information instead of trying to kill my program
+        // and forcing me to use this ugly try catch, like result in rust!
+        return "";
+    }
+
+    public static String generateSalt(int length) {
+        byte[] salt = new byte[length];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(salt);
+
+        // convert byte array to hex string for storing in database
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : salt) {
+            hexString.append(String.format("%02x", b));
+        }
+
+        return hexString.toString();
+    }
 }

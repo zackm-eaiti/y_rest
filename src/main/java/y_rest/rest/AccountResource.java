@@ -22,13 +22,6 @@ public class AccountResource {
     @Autowired
     private AccountService service;
 
-    // handle duplicate handles
-    // create new user, then go to /user/{handle}
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody AccountFormData formData) {
-        return service.registerUser(formData);
-    }
-
     @GetMapping("/{handle}")
     public ResponseEntity<?> getUser(@PathVariable("handle") String handle) {
         return service.getUserDtoByHandle(handle);

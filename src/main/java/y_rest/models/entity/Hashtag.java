@@ -16,7 +16,6 @@ public class Hashtag {
     @Column
     private String label;
 
-
     // i'm using one to one because it makes creating and saving them more efficient - not
     // having to load a hashtag entity and all the tweets with that hashtag
     // when I add a hashtag

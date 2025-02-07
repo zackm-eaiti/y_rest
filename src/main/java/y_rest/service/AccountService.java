@@ -188,25 +188,25 @@ public class AccountService {
     }
 
     public ResponseEntity<?> deleteFollow(String shepherdHandle, String sheepHandle) {
-        var shepherd_opt = repo.findByHandle(shepherdHandle);
+        var shepherdOpt = repo.findByHandle(shepherdHandle);
 
         // if shepherd account didn't exist
-        if (shepherd_opt.isEmpty()) {
+        if (shepherdOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(String.format("user %s does not exist", shepherdHandle));
         }
 
-        var sheep_opt = repo.findByHandle(sheepHandle);
+        var sheepOpt = repo.findByHandle(sheepHandle);
 
         // if sheep account didn't exist
-        if (sheep_opt.isEmpty()) {
+        if (sheepOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(String.format("user %s does not exist", sheepHandle));
         }
 
         // both accounts exist
-        var shepherd = shepherd_opt.get();
-        var sheep = sheep_opt.get();
+        var shepherd = shepherdOpt.get();
+        var sheep = sheepOpt.get();
 
         // check if the follow relationship does not exist
         if (!shepherd.getSheep().contains(sheep)) {
@@ -227,6 +227,23 @@ public class AccountService {
     // this will destroy all users
     public void nuke() {
         repo.deleteAll();
+    }
+
+    public ResponseEntity<?> login(AccountFormData formData) {
+        var accOpt = repo.findByHandle(formData.handle());
+
+        if (accOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(String.format("user %s does not exist", formData.handle()));
+        }
+
+        var account = accOpt.get();
+
+        if (!account.authenticate(formData.password())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("password was incorrect");
+        }
+
+        return ResponseEntity.ok("logged in");
     }
     // del acc
 }
