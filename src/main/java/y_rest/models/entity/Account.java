@@ -58,6 +58,9 @@ public class Account {
     @ManyToMany(mappedBy = "shepherds")
     private Set<Account> sheep;
 
+    @Column
+    private UUID authtoken;
+
     public Account() {
     }
 
@@ -235,5 +238,13 @@ public class Account {
         }
 
         return hexString.toString();
+    }
+
+    public UUID getAuthtoken() {
+        return authtoken;
+    }
+
+    public void setAuthtoken(UUID authtoken) {
+        this.authtoken = authtoken;
     }
 }

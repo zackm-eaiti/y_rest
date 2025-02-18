@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import y_rest.models.dto.account.AccountDto;
 import y_rest.models.dto.account.AccountFormData;
 import y_rest.models.dto.account.AccountPreviewDto;
+import y_rest.models.dto.account.LoginResponse;
 import y_rest.models.dto.tweet.TweetPreviewDto;
 import y_rest.models.entity.Account;
 import y_rest.models.repository.AccountRepository;
@@ -73,21 +74,28 @@ public class AccountService {
         // all good to create account
         var newAccount = new Account(formData);
         repo.save(newAccount);
-        return ResponseEntity.ok(newAccount);
+
+        // sweet
+        return login(formData);
     }
 
-    // again, once I add token generation I will make this safe
-    // how will changes to user cascade? if im mentioned in a tweet, but I change my handle, does the mention work?
     public ResponseEntity<?> patchUser(String handle, AccountFormData formData) {
         var account = repo.findByHandle(handle);
 
-        // could remove this and still be logically sound, but I want to have better error messages
         if (account.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(String.format("user %s does not exist", handle));
         }
 
-        // TODO: authenticate
+        if (formData.email() != null && repo.existsByEmail(formData.email())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(String.format("email %s is in use", formData.email()));
+        }
+
+        if (formData.handle() != null && repo.existsByHandle(formData.handle())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(String.format("handle %s is in use", formData.handle()));
+        }
 
         var savedAccount = account.get().updateFromFormData(formData);
         repo.save(savedAccount);
@@ -224,12 +232,27 @@ public class AccountService {
         return ResponseEntity.ok(AccountDto.fromAccount(savedShepherd));
     }
 
-    // this will destroy all users
+    // this will destroy everything
     public void nuke() {
         repo.deleteAll();
     }
 
+
+    /*
+     * How we are handling login is through:
+     *       ensuring form data and password are correct
+     *       if so, generate a token, store in account entity.
+     *       then, send that token to the frontend
+     *       use that token when sending requests to determine
+     *       authorization level when viewing content.
+     *
+     */
     public ResponseEntity<?> login(AccountFormData formData) {
+
+        System.out.println(formData.handle());
+        System.out.println(formData.password());
+
+
         var accOpt = repo.findByHandle(formData.handle());
 
         if (accOpt.isEmpty()) {
@@ -243,7 +266,16 @@ public class AccountService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("password was incorrect");
         }
 
-        return ResponseEntity.ok("logged in");
+        // gen token and store in db - UUID not the best but more a proof of concept
+        var authtoken = UUID.randomUUID();
+        account.setAuthtoken(authtoken);
+        repo.save(account);
+
+        var response = new LoginResponse(account.getId(), authtoken);
+
+        // return token
+        return ResponseEntity.ok(response);
+
     }
     // del acc
 }

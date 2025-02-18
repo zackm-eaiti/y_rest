@@ -19,22 +19,6 @@ public class AuthenticationResource {
         return service.registerUser(formData);
     }
 
-
-    /*
-     * How we are handling login in is through:
-     *       ensuring form data and password are correct
-     *       if so, generate a token, store in account entity.
-     *       then, send that token to the frontend
-     *       use that token when sending requests to determine
-     *       authorization level when viewing content.
-     *
-     * What is the best way to do this? Through sessions?
-     *       This would entail sending that session stuff
-     *       over and then storing it in the user. We can
-     *       then just leave that key in the account entity,
-     *       we don't need to delete it, just rewrite every
-     *       time we log in with the new session information.
-     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AccountFormData formData) {
          return service.login(formData);
