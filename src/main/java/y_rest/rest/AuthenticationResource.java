@@ -15,7 +15,7 @@ public class AuthenticationResource {
 
     // todo: handle duplicate handles
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody AccountFormData formData) {
+    public ResponseEntity<?> registerUser(@ModelAttribute AccountFormData formData) {
         return service.registerUser(formData);
     }
 

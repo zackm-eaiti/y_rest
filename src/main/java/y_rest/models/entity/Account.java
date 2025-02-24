@@ -1,9 +1,12 @@
 package y_rest.models.entity;
+
+import java.io.IOException;
 import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
+
 import jakarta.persistence.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,11 +38,11 @@ public class Account {
     @Column
     private String email;
 
-    @Column(name = "profile_pic_url")
-    private String profilePicUrl;
+    @Column(name = "profile_pic")
+    private byte[] profilePic;
 
-    @Column(name = "banner_pic_url")
-    private String bannerPicUrl;
+    @Column(name = "banner_pic")
+    private byte[] bannerPic;
 
     @Column(name = "hashed_pw")
     private String hashedPw;
@@ -64,7 +67,7 @@ public class Account {
     public Account() {
     }
 
-    public Account(AccountFormData formData) {
+    public Account(AccountFormData formData) throws IOException {
 
         // auto-gen
         this.setId(UUID.randomUUID());
@@ -76,15 +79,16 @@ public class Account {
         this.setEmail(formData.email());
         this.setSalt(generateSalt(16));
         this.setHashedPw(hashPassword(formData.password(), this.getSalt()));
-        this.setProfilePicUrl(formData.profilePicUrl());
-        this.setBannerPicUrl(formData.bannerPicUrl());
+
+        this.setProfilePic(formData.profilePic().getBytes());
+        this.setBannerPic(formData.bannerPic().getBytes());
         this.setBio(formData.bio());
 
         // "My following" means the same as "My followers"
         this.setShepherds(new HashSet<>());
         this.setSheep(new HashSet<>());
     }
-    
+
     public boolean authenticate(String formPassword) {
         String formHashed = hashPassword(formPassword, this.getSalt());
         return formHashed.equals(this.getHashedPw());
@@ -103,12 +107,6 @@ public class Account {
         }
         if (formData.password() != null) {
             this.setHashedPw(formData.password());
-        }
-        if (formData.profilePicUrl() != null) {
-            this.setProfilePicUrl(formData.profilePicUrl());
-        }
-        if (formData.bannerPicUrl() != null) {
-            this.setBannerPicUrl(formData.bannerPicUrl());
         }
         if (formData.bio() != null) {
             this.setBio(formData.bio());
@@ -156,21 +154,14 @@ public class Account {
         this.email = email;
     }
 
-    public String getProfilePicUrl() {
-        return profilePicUrl;
+    public byte[] getProfilePic() {
+        return profilePic;
     }
 
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
+    public void setProfilePic(byte[] profilePic) {
+        this.profilePic = profilePic;
     }
 
-    public String getBannerPicUrl() {
-        return bannerPicUrl;
-    }
-
-    public void setBannerPicUrl(String bannerPicUrl) {
-        this.bannerPicUrl = bannerPicUrl;
-    }
 
     public String getHashedPw() {
         return hashedPw;
@@ -221,8 +212,7 @@ public class Account {
         } catch (Exception e) {
             log.error("e: ", e);
         }
-        // i hate exceptions. Why not return some kind of useful information instead of trying to kill my program
-        // and forcing me to use this ugly try catch, like result in rust!
+
         return "";
     }
 
@@ -246,5 +236,13 @@ public class Account {
 
     public void setAuthtoken(UUID authtoken) {
         this.authtoken = authtoken;
+    }
+
+    public byte[] getBannerPic() {
+        return bannerPic;
+    }
+
+    public void setBannerPic(byte[] bannerPic) {
+        this.bannerPic = bannerPic;
     }
 }

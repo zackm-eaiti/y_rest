@@ -12,8 +12,8 @@ public record AccountDto(
         String handle,
         String displayName,
         String email,
-        String profilePicUrl,
-        String bannerPicUrl,
+        byte[] profilePic,
+        byte[] bannerPic,
         String bio,
         List<AccountPreviewDto> following,
         List<AccountPreviewDto> followers
@@ -25,8 +25,8 @@ public record AccountDto(
                 account.getHandle(),
                 account.getDisplayName(),
                 account.getEmail(),
-                account.getProfilePicUrl(),
-                account.getBannerPicUrl(),
+                account.getProfilePic(),
+                account.getBannerPic(),
                 account.getBio(),
                 account.getShepherds().stream().map(AccountPreviewDto::fromAccount).toList(),
                 account.getSheep().stream().map(AccountPreviewDto::fromAccount).toList()

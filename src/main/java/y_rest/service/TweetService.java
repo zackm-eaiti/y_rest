@@ -156,4 +156,10 @@ public class TweetService {
     public List<TweetPreviewDto> searchForTweet(String phrase) {
         return repo.findByPhraseLike(phrase).stream().map(TweetPreviewDto::create).toList();
     }
+
+    public List<TweetPreviewDto> findByUserIds(List<String> userIds) {
+        return repo.findByAccountIn(
+                userIds.stream().map(UUID::fromString).toList()
+        ).stream().map(TweetPreviewDto::create).toList();
+    }
 }

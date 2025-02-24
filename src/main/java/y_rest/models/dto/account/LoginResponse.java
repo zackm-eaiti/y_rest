@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record LoginResponse(
         UUID id,
-        UUID token
+        UUID token,
+        String handle
 ) {
 }

@@ -1,14 +1,19 @@
 package y_rest.rest;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import y_rest.models.dto.account.AccountFormData;
 import y_rest.models.dto.account.AccountPreviewDto;
+import y_rest.models.dto.tweet.TweetPreviewDto;
+import y_rest.models.entity.Account;
 import y_rest.service.AccountService;
+import y_rest.service.TweetService;
 
 import java.util.List;
+import java.util.UUID;
 
 /*
 I do switch back and forth from account to user a little here -
@@ -21,6 +26,9 @@ public class AccountResource {
 
     @Autowired
     private AccountService service;
+
+    @Autowired
+    private TweetService tweetService;
 
     @GetMapping("/{handle}")
     public ResponseEntity<?> getUser(@PathVariable("handle") String handle) {
@@ -68,5 +76,20 @@ public class AccountResource {
     }
 
 
+    @GetMapping("/{handle}/feed")
+    public ResponseEntity<?> getFeed(@PathVariable("handle") String handle) {
+        var response = service.getUserByHandle(handle);
+        if (response.getStatusCode().isError()) {
+            return response;
+        }
+
+        var account = (Account) response.getBody();
+
+
+
+        // we know account exists
+        var shepherdIds = account.getShepherds().stream().map(Account::getId).map(UUID::toString).toList();
+        return ResponseEntity.ok(tweetService.findByUserIds(shepherdIds));
+    }
     // del acc
 }
