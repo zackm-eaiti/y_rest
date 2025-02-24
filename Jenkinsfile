@@ -5,6 +5,7 @@ pipeline {
     	githubPush()
   	}
 
+	// first stage
 	stages {
 		stage('Hello') {
 			steps {
