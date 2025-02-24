@@ -15,11 +15,11 @@ public class Nuke {
     @Autowired
     private AccountService service;
 
-    // just for funsies
-    @DeleteMapping
-    public void nuke() {
-        service.nuke();
-    }
+    // // just for funsies
+    // @DeleteMapping
+    // public void nuke() {
+    //     service.nuke();
+    // }
 }
 
 
