@@ -13,7 +13,7 @@ class YRestApplicationTests {
 
 	@Test 
 	void helloTests() {
-		System.out.println("hello")
+		System.out.println("hello");
 	}
 
 }
