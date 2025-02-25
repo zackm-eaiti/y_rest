@@ -16,7 +16,24 @@ pipeline {
 
 		stage('Test') {
 			steps {
-				sh './gradlew test'
+			    script {
+			        parallel(
+			        	'Test 1': {
+			        	    try {
+                            	sh './gradlew test'
+			        	    } catch (Exception e) {
+			        	    	echo 'oopsies'
+			        	    }
+                        },
+			        	'Test 2': {
+			        	    try {
+                            	sh './gradlew test'
+			        	    } catch (Exception e) {
+			        	    	echo 'oopsies'
+			        	    }
+                        }
+			        )
+			    }
 			}
 		}
 

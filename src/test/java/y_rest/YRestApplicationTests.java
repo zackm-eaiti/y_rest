@@ -23,7 +23,7 @@ class YRestApplicationTests {
 
 		Thread.sleep(5000);
 
-		System.out.println("ALL DONE");
+		System.out.println("ALL IS DONE");
 
 		assertNotEquals("hello", "world");
 	}
