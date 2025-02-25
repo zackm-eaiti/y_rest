@@ -16,7 +16,7 @@ pipeline {
 
 		stage('Test') {
 			steps {
-				sh './gradlew testSetup'
+				sh './gradlew test'
 			}
 		}
 
@@ -29,9 +29,9 @@ pipeline {
     }
 
     post {
-
 		// Exiting
         always {
+			sh './gradlew clean'
             echo 'Great Success'
         }
     }

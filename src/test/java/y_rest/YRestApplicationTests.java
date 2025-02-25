@@ -11,4 +11,9 @@ class YRestApplicationTests {
 
 	}
 
+	@Test 
+	void helloTests() {
+		System.out.println("hello")
+	}
+
 }
