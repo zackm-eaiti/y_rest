@@ -26,11 +26,7 @@ pipeline {
 			        	    }
                         },
 			        	'Test 2': {
-			        	    try {
-                            	sh './gradlew test2'
-			        	    } catch (Exception e) {
-			        	    	echo 'oopsies'
-			        	    }
+                        	sh './gradlew test2'
                         }
 			        )
 			    }
