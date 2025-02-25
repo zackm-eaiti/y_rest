@@ -22,6 +22,7 @@ pipeline {
 
 		stage('Scan') {
 			steps {
+				echo "... Scanning ..."
 				// SonarQube, OWASP, ..., analysis 
 			}
 		}
