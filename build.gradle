@@ -32,3 +32,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('test2') {
+	doLast {
+		Thread.sleep(4000)
+		throw new GradleException("Tests failed!")
+	}
+}

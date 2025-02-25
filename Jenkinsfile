@@ -27,7 +27,7 @@ pipeline {
                         },
 			        	'Test 2': {
 			        	    try {
-                            	sh './gradlew test'
+                            	sh './gradlew test2'
 			        	    } catch (Exception e) {
 			        	    	echo 'oopsies'
 			        	    }
