@@ -80,8 +80,18 @@ public class Account {
         this.setSalt(generateSalt(16));
         this.setHashedPw(hashPassword(formData.password(), this.getSalt()));
 
-        this.setProfilePic(formData.profilePic().getBytes());
-        this.setBannerPic(formData.bannerPic().getBytes());
+        if (formData.profilePic() != null) {
+            this.setProfilePic(formData.profilePic().getBytes());
+        } else {
+            this.setProfilePic(null);
+        }
+
+        if (formData.bannerPic() != null) {
+            this.setBannerPic(formData.bannerPic().getBytes());
+        } else {
+            this.setBannerPic(null);
+        }
+
         this.setBio(formData.bio());
 
         // "My following" means the same as "My followers"
@@ -94,7 +104,7 @@ public class Account {
         return formHashed.equals(this.getHashedPw());
     }
 
-    public Account updateFromFormData(AccountFormData formData) {
+    public Account updateFromFormData(AccountFormData formData) throws IOException {
         // null = no change
         if (formData.handle() != null) {
             this.setHandle(formData.handle());
@@ -111,6 +121,12 @@ public class Account {
         if (formData.bio() != null) {
             this.setBio(formData.bio());
         }
+        if (formData.profilePic() != null) {
+            this.setProfilePic(formData.profilePic().getBytes());
+        }
+//        if (formData.bannerPic() != null) {
+//            this.setBannerPic(formData.bannerPic().getBytes());
+//        }
         return this;
     }
 

@@ -69,7 +69,7 @@ public class AccountService {
 
         // all good to create account
         try {
-            Account newAccount = new Account(formData);
+            var newAccount = new Account(formData);
             repo.save(newAccount);
             return login(formData);
         } catch (IOException e) {
@@ -95,10 +95,14 @@ public class AccountService {
         if (formData.handle() != null && repo.existsByHandle(formData.handle())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(String.format("handle %s is in use", formData.handle()));
         }
-
-        var savedAccount = account.get().updateFromFormData(formData);
-        repo.save(savedAccount);
-        return ResponseEntity.ok(savedAccount);
+        System.out.println(formData.profilePic());
+        try {
+            var savedAccount = account.get().updateFromFormData(formData);
+            repo.save(savedAccount);
+            return ResponseEntity.ok(savedAccount);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
+        }
     }
 
     // no response entity, not possible to get an error - need to add input validation for injections

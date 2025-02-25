@@ -53,12 +53,12 @@ public class AccountResource {
     }
 
     @PostMapping("/{shepherd_handle}/post_follow")
-    public ResponseEntity<?> postFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestParam("sheep_handle") String sheepHandle) {
+    public ResponseEntity<?> postFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestBody String sheepHandle) {
         return service.postFollow(shepherdHandle, sheepHandle);
     }
 
-    @DeleteMapping("/{shepherd_handle}/delete_follow")
-    public ResponseEntity<?> deleteFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestParam("sheep_handle") String sheepHandle) {
+    @PostMapping("/{shepherd_handle}/delete_follow")
+    public ResponseEntity<?> deleteFollow(@PathVariable("shepherd_handle") String shepherdHandle, @RequestBody String sheepHandle) {
         return service.deleteFollow(shepherdHandle, sheepHandle);
     }
 
