@@ -16,10 +16,10 @@ public class Nuke {
     private AccountService service;
 
     // just for funsies
-    @DeleteMapping
-    public void nuke() {
-        service.nuke();
-    }
+    // @DeleteMapping
+    // public void nuke() {
+    //     service.nuke();
+    // }
 }
 
 
