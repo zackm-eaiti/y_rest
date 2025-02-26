@@ -5,6 +5,10 @@ pipeline {
         githubPush()
     }
 
+    parameters {
+    	booleanParam(name: 'deploy', defaultValue: false, description: 'check to deploy')
+    }
+
     // first stage
     stages {  
             stage('Build') {
@@ -19,11 +23,7 @@ pipeline {
 			    script {
 			        parallel(
 			        	'Test 1': {
-			        	    try {
-                            	sh './gradlew test'
-			        	    } catch (Exception e) {
-			        	    	echo 'oopsies'
-			        	    }
+							sh './gradlew test'
                         },
 			        	'Test 2': {
                         	sh './gradlew test2'
@@ -35,14 +35,24 @@ pipeline {
 
 		stage('Scan') {
 			steps {
-				echo "... Scanning ..."
+				echo '... Scanning ...'
 				// SonarQube, OWASP, ..., analysis 
 			}
+		}
+
+		stage('Deploy') {
+			steps {
+				echo '... Creating Deliverable ...'
+				script {
+		        	if (params.deploy) {
+                		echo '... Deploying ...'
+                 	}
+                }
+            }
 		}
     }
 
     post {
-		// Exiting
         always {
 			sh './gradlew clean'
             echo 'Great Success'
