@@ -21,10 +21,6 @@ class YRestApplicationTests {
 
 		System.out.println("BIG THINGS ARE HAPPENING");
 
-		Thread.sleep(5000);
-
-		System.out.println("ALL IS DONE");
-
 		assertNotEquals("hello", "world");
 	}
 
