@@ -1,19 +1,15 @@
 pipeline {
-    agent {
-    	label 'demo2'
-    }
+	agent {
+		label 'demo'
+	}
 
-    triggers {
-        githubPush()
-    }
-
-    parameters {
-    	booleanParam(name: 'deploy', defaultValue: false, description: 'check to deploy')
-    }
+	triggers {
+		githubPush()
+	}
 
     // first stage
-    stages {  
-            stage('Build') {
+    stages {
+    	stage('Build') {
             steps {
                 checkout scm
                 sh './gradlew bootJar'
@@ -22,23 +18,14 @@ pipeline {
 
 		stage('Test') {
 			steps {
-			    script {
-			        parallel(
-			        	'Test 1': {
-							sh './gradlew test'
-                        },
-			        	'Test 2': {
-                        	// sh './gradlew test2'
-                        }
-			        )
-			    }
+				sh './gradlew test'
 			}
 		}
 
 		stage('Scan') {
 			steps {
 				echo '... Scanning ...'
-				// SonarQube, OWASP, ..., analysis 
+				// SonarQube, OWASP, ..., analysis
 			}
 		}
 
@@ -60,4 +47,5 @@ pipeline {
             echo 'Great Success'
         }
     }
+
 }
