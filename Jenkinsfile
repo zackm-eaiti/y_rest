@@ -1,21 +1,26 @@
 pipeline {
-	agent any
+	agent any											// Specify which Agent
 
 	triggers {
 		githubPush()
 	}
 
-    // first stage
+	parameters {
+    	booleanParam(name: 'deploy', defaultValue: false, description: 'check to deploy')
+    }
+
     stages {
     	stage('Build') {
             steps {
                 checkout scm
+                sh '... Building ...'
                 sh './gradlew bootJar'
             }
         }
 
 		stage('Test') {
 			steps {
+				echo '... Testing ...'
 				sh './gradlew test'
 			}
 		}
@@ -40,9 +45,14 @@ pipeline {
     }
 
     post {
+   		success {
+   			echo 'Great Success'
+   		}
+   		failure {
+   			echo ':('
+   		}
         always {
 			sh './gradlew clean'
-            echo 'Great Success'
         }
     }
 
