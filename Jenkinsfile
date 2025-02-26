@@ -13,7 +13,7 @@ pipeline {
     	stage('Build') {
             steps {
                 checkout scm
-                sh '... Building ...'
+                echo '... Building ...'
                 sh './gradlew bootJar'
             }
         }
